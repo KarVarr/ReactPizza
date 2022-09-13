@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setCategoryId, setCurrentPage } from '../redux/slices/filterSlice';
+import { fetchPizzas } from '../redux/slices/pizzasSlice.js';
 import { SearchContext } from '../App';
 import Categories from '../components/Categories';
 import Pagination from '../components/Pagination/Pagination';
@@ -10,17 +11,18 @@ import Skeleton from '../components/PizzaBlock/Skeleton';
 import Sort from '../components/Sort';
 import axios from 'axios';
 
+const img404 =
+  'https://woobro.design/thumbnails/30/page-not-found-404-error-vector-illustration-5de1881dd11bc.png';
+
+
 export default function Home() {
   //REDUX
   const dispatch = useDispatch();
-  const categoryId = useSelector(state => state.filter.categoryId);
-  const sortType = useSelector(state => state.filter.sort.sortProperty);
-  const currentPage = useSelector(state => state.filter.currentPage);
+  const { items, status } = useSelector(state => state.pizza);
+  const { categoryId, sort, currentPage } = useSelector(state => state.filter);
 
   //USE STATE/USE CONTEXT
   const { searchValue } = useContext(SearchContext);
-  const [items, setItems] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   //CONST
   const onChangePage = number => {
@@ -32,29 +34,23 @@ export default function Home() {
   };
 
   //AXIOS/FETCH
-  useEffect(() => {
-    // fetch(
-    //   `https://630e257b109c16b9abf5a964.mockapi.io/items?page=${currentPage}&limit=15&${
-    //     categoryId > 0 ? `category=${categoryId}` : ''
-    //   }&sortBy=${sortType?.replace('-', '')}&order=${
-    //     sortType?.includes('-') ? 'desc' : 'asc'
-    //   }`
-    // )
-    //   .then(res => res.json())
-    //   .then(arr => setItems(arr));
-    setIsLoading(true);
-     axios
-      .get(
-        `https://630e257b109c16b9abf5a964.mockapi.io/items?page=${currentPage}&limit=15&${
-          categoryId > 0 ? `category=${categoryId}` : ''
-        }&sortBy=${sortType?.replace('-', '')}&order=${
-          sortType?.includes('-') ? 'desc' : 'asc'
-        }`
-      )
-      .then(res => setItems(res.data));
-    setIsLoading(false);
+  const getPizzas = async () => {
+    dispatch(
+      fetchPizzas({
+        categoryId,
+        currentPage,
+        sort,
+      })
+    );
     window.scrollTo(0, 0);
-  }, [categoryId, sortType, searchValue, currentPage]);
+  };
+
+  useEffect(() => {
+    getPizzas();
+  }, [categoryId, sort.sortProperty, searchValue, currentPage]);
+
+  //parsing parametrs in first loading
+  useEffect(() => {}, []);
 
   //PIZZA MAP
   const pizzas = items
@@ -86,7 +82,18 @@ export default function Home() {
         <Sort />
       </div>
       <h2 className='content__title'>Все пиццы</h2>
-      <div className='content__items'>{isLoading ? skeleton : pizzas}</div>
+      {status === 'error' ? (
+        <div className='content__error'>
+          <h2>Oops...</h2>
+          <img src={img404} alt='error' />
+          <p>Something went wrong, reload the page!</p>
+        </div>
+      ) : (
+        <div className='content__items'>
+          {status === 'loading' ? skeleton : pizzas}
+        </div>
+      )}
+
       <Pagination currentPage={currentPage} onChangePage={onChangePage} />
     </>
   );

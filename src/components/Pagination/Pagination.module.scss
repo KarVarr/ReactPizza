@@ -1,0 +1,43 @@
+.root {
+  margin-top: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  li {
+    padding: 5px;
+    background-color: powderblue;
+    border-radius: 30px;
+
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.25s ease;
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px black;
+      background-color: darken($color: powderblue, $amount: 20);
+    }
+    &:active,
+    &:focus {
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+      transform: translateY(0) scale(0.98);
+      background-color: salmon;
+    }
+  }
+  a {
+    width: 50px;
+    height: 50px;
+    padding: 5px;
+    background-color: powderblue;
+    border-radius: 30px;
+    display: grid;
+    place-items: center;
+  }
+  :global {
+    .selected {
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+      transform: translateY(0) scale(0.98);
+      background-color: salmon;
+    }
+  }
+}

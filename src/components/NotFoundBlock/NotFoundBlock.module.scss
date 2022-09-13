@@ -1,0 +1,26 @@
+.root {
+  height: 70vh;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  .img {
+    box-sizing: border-box;
+    max-width: 500px;
+    max-height: 500px;
+    margin-bottom: 100px;
+    img {
+    width: 100%;
+  }
+  }
+  
+  h1, h2 {
+    color: rgb(106, 6, 220);
+  }
+  p {
+    font-size: 28px;
+    font-style: italic;
+  }
+}
